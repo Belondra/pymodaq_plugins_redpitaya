@@ -4,14 +4,10 @@ from pymodaq.utils.daq_utils import ThreadCommand, getLineInfo
 from pymodaq.utils.data import DataFromPlugins, Axis
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.parameter import Parameter
+from pymodaq_plugins_redpitaya.hardware.redpitaya_scpi import scpi
 
 
-class PythonWrapperOfYourInstrument:
-    #  TODO Replace this fake class with the import of the real python wrapper of your instrument
-    pass
-
-
-class DAQ_1DViewer_Template(DAQ_Viewer_base):
+class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
     """
     """
     params = comon_parameters+[
@@ -23,7 +19,7 @@ class DAQ_1DViewer_Template(DAQ_Viewer_base):
     def ini_attributes(self):
         #  TODO declare the type of the wrapper (and assign it to self.controller) you're going to use for easy
         #  autocompletion
-        self.controller: PythonWrapperOfYourInstrument = None
+        self.controller: scpi = None
 
         # TODO declare here attributes you want/need to init with a default value
 
@@ -59,31 +55,23 @@ class DAQ_1DViewer_Template(DAQ_Viewer_base):
             False if initialization failed otherwise True
         """
 
-        raise NotImplemented  # TODO when writing your own plugin remove this line and modify the one below
         self.ini_detector_init(old_controller=controller,
-                               new_controller=PythonWrapperOfYourInstrument())
+                               new_controller=scpi('169.254.168.242'))
 
-        ## TODO for your custom plugin
-        # get the x_axis (you may want to to this also in the commit settings if x_axis may have changed
-        data_x_axis = self.controller.your_method_to_get_the_x_axis() # if possible
-        self.x_axis = Axis(data=data_x_axis, label='', units='')
 
-        # TODO for your custom plugin. Initialize viewers pannel with the future type of data
-        self.data_grabed_signal_temp.emit([DataFromPlugins(name='Mock1',
-                                                           data=[np.array([0., 0., ...]), np.array([0., 0., ...])],
-                                                           dim='Data1D', labels=['Mock1', 'label2'],
-                                                           x_axis=self.x_axis)])
         # note: you could either emit the x_axis once (or a given place in the code) using self.emit_x_axis() as shown
         # above. Or emit it at every grab filling it the x_axis key of DataFromPlugins)
-        info = "Whatever info you want to log"
+        info = self.controller.idn_q()
         initialized = True
         return info, initialized
 
     def close(self):
         """Terminate the communication protocol"""
-        ## TODO for your custom plugin
-        raise NotImplemented  # when writing your own plugin remove this line
-        #  self.controller.your_method_to_terminate_the_communication()  # when writing your own plugin replace this line
+        self.controller.close()
+
+    def prepare_acquisition(self):
+        self.controller.tx
+
 
     def grab_data(self, Naverage=1, **kwargs):
         """Start a grab from the detector
@@ -97,11 +85,16 @@ class DAQ_1DViewer_Template(DAQ_Viewer_base):
             others optionals arguments
         """
         ## TODO for your custom plugin
-
+        self.prepare_acquisition()
         ##synchrone version (blocking function)
         data_tot = self.controller.your_method_to_start_a_grab_snap()
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=data_tot,
-                                                      dim='Data1D', labels=['dat0', 'data1'])])
+
+
+
+
+        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(buff)],
+                                                      dim='Data1D', labels=['dat0'],
+                                                      x_axis=Axis())])
         # note: you could either emit the x_axis once (or a given place in the code) using self.emit_x_axis() as shown
         # above. Or emit it at every grab filling it the x_axis key of DataFromPlugins, not shown here)
 
@@ -109,20 +102,9 @@ class DAQ_1DViewer_Template(DAQ_Viewer_base):
         self.controller.your_method_to_start_a_grab_snap(self.callback)
         #########################################################
 
-
-    def callback(self):
-        """optional asynchrone method called when the detector has finished its acquisition of data"""
-        data_tot = self.controller.your_method_to_get_data_from_buffer()
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=data_tot,
-                                                      dim='Data1D', labels=['dat0', 'data1'])])
-
     def stop(self):
         """Stop the current grab hardware wise if necessary"""
-        ## TODO for your custom plugin
-        raise NotImplemented  # when writing your own plugin remove this line
-        self.controller.your_method_to_stop_acquisition()  # when writing your own plugin replace this line
-        self.emit_status(ThreadCommand('Update_Status', ['Some info you want to log']))
-        ##############################
+
         return ''
 
 

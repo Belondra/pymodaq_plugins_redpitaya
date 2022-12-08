@@ -5,6 +5,7 @@ import socket
 __author__ = "Luka Golinar, Iztok Jeras"
 __copyright__ = "Copyright 2015, Red Pitaya"
 
+
 class scpi (object):
     """SCPI class used to access Red Pitaya over an IP network."""
     delimiter = '\r\n'
@@ -27,6 +28,7 @@ class scpi (object):
 
         except socket.error as e:
             print('SCPI >> connect({!s:s}:{:d}) failed: {!s:s}'.format(host, port, e))
+            raise Exception('not connected')
 
     def __del__(self):
         if self._socket is not None:

@@ -20,6 +20,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         #  TODO declare the type of the wrapper (and assign it to self.controller) you're going to use for easy
         #  autocompletion
         self.controller: scpi = None
+        # Besoin de mettre "redpitaya_scpi.py" ici ??
 
         # TODO declare here attributes you want/need to init with a default value
 
@@ -57,6 +58,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
 
         self.ini_detector_init(old_controller=controller,
                                new_controller=scpi('169.254.168.242'))
+        # On définit un nouvel objet de type scpi que l'on appel controller, il représente notre carte d'acquisition
 
 
         # note: you could either emit the x_axis once (or a given place in the code) using self.emit_x_axis() as shown
@@ -70,7 +72,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         self.controller.close()
 
     def prepare_acquisition(self):
-        self.controller.tx
+        self.controller.prep_acq()
 
 
     def grab_data(self, Naverage=1, **kwargs):
@@ -87,25 +89,26 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         ## TODO for your custom plugin
         self.prepare_acquisition()
         ##synchrone version (blocking function)
-        data_tot = self.controller.your_method_to_start_a_grab_snap()
+        data_tot = self.controller.start_analog_acq()
 
 
 
 
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(buff)],
+        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(data_tot)],
                                                       dim='Data1D', labels=['dat0'],
                                                       x_axis=Axis())])
         # note: you could either emit the x_axis once (or a given place in the code) using self.emit_x_axis() as shown
         # above. Or emit it at every grab filling it the x_axis key of DataFromPlugins, not shown here)
 
         ##asynchrone version (non-blocking function with callback)
-        self.controller.your_method_to_start_a_grab_snap(self.callback)
+        #self.controller.your_method_to_start_a_grab_snap(self.callback)
+        # on en a pas besoin ??
 
         #########################################################
 
     def stop(self):
         """Stop the current grab hardware wise if necessary"""
-
+        self.controller.stop_analog_acq()
         return ''
 
 

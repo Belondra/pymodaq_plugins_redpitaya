@@ -7,7 +7,8 @@ __copyright__ = "Copyright 2015, Red Pitaya"
 
 
 class scpi (object):
-    """SCPI class used to access Red Pitaya over an IP network."""
+    """SCPI class (=objet) used to access Red Pitaya over an IP network."""
+    # Ceci est la liste des fonctions qui seront reconnu par un objet de class scpi.
     delimiter = '\r\n'
 
     def __init__(self, host, timeout=None, port=5000):
@@ -38,6 +39,8 @@ class scpi (object):
     def close(self):
         """Close IP connection."""
         self.__del__()
+
+
 
     def rx_txt(self, chunksize = 4096):
         """Receive text string and return it after removing the delimiter."""
@@ -136,3 +139,41 @@ class scpi (object):
     def err_c(self):
         """Error next."""
         return rp.txrx_txt('SYST:ERR:NEXT?')
+
+###################### Fonctions perso #######################"
+
+    def prep_acq(self):
+         """Prepare the Red Pitaya board to the acquisition """
+        self.tx_txt('ACQ:RST')
+        self.tx_txt('ACQ:DEC 4')
+
+    def start_analog_acq(self):
+        """ Start the acquisition of the signal and return it into a list of float"""
+
+        self.tx_txt('ACQ:START')                        #Lance l'aquisition
+        self.tx_txt('ACQ:TRIG NOW')                     #Active le trigger instantanément
+
+        while 1:
+            self.tx_txt('ACQ:TRIG:STAT?')            # Demande le statut du trigger --> TD ou WAIT
+            if self.rx_txt() == 'TD':                # si cela renvoie TD, alors il est activé et on break pour sortir du while
+                break
+
+
+        self.tx_txt('ACQ:SOUR1:DATA?')  # Lit le buffer entier de l'entrée 1, en commencant par le plus vieux échantillons (celui juste après le trigger)
+        buff_string = self.rx_txt()  # On crée une variable buff_string de type string
+
+        buff_string = buff_string.strip('{}\n\r').replace("  ", "").split(',')
+        # avec .strip on retire les caractères {}\n\r du texte (correspond aux délimiteurs du texte
+        # avec .replace permet de remplacer un espace par une zone de texte vide (On supprime les espaces)
+        # avec .split on sépare la chaine de texte en une liste en spécifiant que le séparateur à prendre en compte pour la création de la liste est la virgule
+
+        buff = list(map(float,buff_string))
+        # création d'une liste "buff" de float à partir de la liste "buff_string" contenant des chaines de caractères
+        # map permet de convertir un à un en float les éléments de la liste en faisant float(élément1) puis float(élément2) etc.
+        # "list" convertie l'objet map en une liste
+
+        return buff
+
+    def stop_analog_acq(self):
+        """ Start the acquisition of the signal"""
+        self.tx_txt('ACQ:STOP')

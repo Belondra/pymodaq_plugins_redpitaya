@@ -1,4 +1,5 @@
 import numpy as np
+from qtpy.QtCore import QTimer
 from easydict import EasyDict as edict
 from pymodaq.utils.daq_utils import ThreadCommand, getLineInfo
 from pymodaq.utils.data import DataFromPlugins, Axis
@@ -20,11 +21,24 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         #  TODO declare the type of the wrapper (and assign it to self.controller) you're going to use for easy
         #  autocompletion
         self.controller: scpi = None
-        # Besoin de mettre "redpitaya_scpi.py" ici ??
+        # definie le controller en objet de class scpi
 
         # TODO declare here attributes you want/need to init with a default value
 
         self.x_axis = None
+        self.timer = QTimer()
+        self.timer.setInterval(100)
+        self.timer.timeout.connect(self.is_ready)
+
+    def is_ready(self):
+        if self.controller.test_ready():
+            self.timer.stop()
+            data = self.controller.get_data()
+            self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(data)],
+                                                          dim='Data1D', labels=['source1'],
+                                                          x_axis=Axis(label='Time', units='pts',
+                                                                      data=np.linspace(0, len(data) - 1,
+                                                                                       len(data))))])
 
     def commit_settings(self, param: Parameter):
         """Apply the consequences of a change of value in the detector settings
@@ -90,21 +104,16 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         self.prepare_acquisition()
         ##synchrone version (blocking function)
         data_tot = self.controller.start_analog_acq()
+        self.timer.start()
 
 
 
 
-        self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(data_tot)],
-                                                      dim='Data1D', labels=['dat0'],
-                                                      x_axis=Axis())])
+
         # note: you could either emit the x_axis once (or a given place in the code) using self.emit_x_axis() as shown
         # above. Or emit it at every grab filling it the x_axis key of DataFromPlugins, not shown here)
 
-        ##asynchrone version (non-blocking function with callback)
-        #self.controller.your_method_to_start_a_grab_snap(self.callback)
-        # on en a pas besoin ??
 
-        #########################################################
 
     def stop(self):
         """Stop the current grab hardware wise if necessary"""

@@ -134,18 +134,19 @@ class scpi (object):
 
     def err_c(self):
         """Error count."""
-        return rp.txrx_txt('SYST:ERR:COUN?')
+        return self.txrx_txt('SYST:ERR:COUN?')
 
     def err_c(self):
         """Error next."""
-        return rp.txrx_txt('SYST:ERR:NEXT?')
+        return self.txrx_txt('SYST:ERR:NEXT?')
 
 ###################### Fonctions perso #######################"
 
-    def prep_acq(self):
+    def prep_acq(self, decimation: int = 1):
          """Prepare the Red Pitaya board to the acquisition """
-        self.tx_txt('ACQ:RST')
-        self.tx_txt('ACQ:DEC 4')
+         # s'assurer que l'argument est bien un entier entre 1 et 16 du log de 2 de l'argument
+         self.tx_txt('ACQ:RST')
+         self.tx_txt(f'ACQ:DEC {decimation}')
 
     def start_analog_acq(self):
         """ Start the acquisition of the signal and return it into a list of float"""
@@ -153,13 +154,13 @@ class scpi (object):
         self.tx_txt('ACQ:START')                        #Lance l'aquisition
         self.tx_txt('ACQ:TRIG NOW')                     #Active le trigger instantanément
 
-        while 1:
-            self.tx_txt('ACQ:TRIG:STAT?')            # Demande le statut du trigger --> TD ou WAIT
-            if self.rx_txt() == 'TD':                # si cela renvoie TD, alors il est activé et on break pour sortir du while
-                break
+    def test_ready(self):
+        self.tx_txt('ACQ:TRIG:STAT?')            # Demande le statut du trigger --> TD ou WAIT
+        return self.rx_txt() == 'TD'                # si cela renvoie TD, alors il est activé et on break pour sortir du while
 
-
-        self.tx_txt('ACQ:SOUR1:DATA?')  # Lit le buffer entier de l'entrée 1, en commencant par le plus vieux échantillons (celui juste après le trigger)
+    def get_data(self, source: int = 1):
+        #verifier si la source est bien 1 ou 2 sinon erreur
+        self.tx_txt(f'ACQ:SOUR{source}:DATA?')  # Lit le buffer entier de l'entrée 1, en commencant par le plus vieux échantillons (celui juste après le trigger)
         buff_string = self.rx_txt()  # On crée une variable buff_string de type string
 
         buff_string = buff_string.strip('{}\n\r').replace("  ", "").split(',')

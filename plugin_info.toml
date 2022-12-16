@@ -5,9 +5,7 @@ SHORT_PLUGIN_NAME = 'redpitaya'  #to be modified, for instance daqmx then rename
 # (pymodaq_plugins_redpitaya become pymodaq_plugins_daqmx for instance)
 
 package-url = 'https://github.com/Belondra/pymodaq_plugins_redpitaya' #to modify
-description = 'Ce plugin a pour but d assurer l interface entre le capteur de tension sur le banc d expérience et la fenêtre de communication'
-'avec l utilisateur via PyMoDaq, une partie du code se servira du language SCPI afin de communiquer avec le CAN (redpitaya), nous retrouverons'
-'cette partie dans la partie hardware du plugin'
+description = 'Ce plugin a pour but d assurer'
 
 author = 'Bélondrade Matthieu, Dulong Antoine'
 author-email = 'matthieu.belondrade@free.fr , antoine.dulong1@gmail.com'

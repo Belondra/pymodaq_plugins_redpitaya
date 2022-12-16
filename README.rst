@@ -21,16 +21,16 @@ Set of PyMoDAQ plugins for instruments from ???
 Authors
 =======
 
-* First Author  (myemail@xxx.org)
-* Other author (myotheremail@xxx.org)
+* First Author  (matthieu.belondrade@free.fr , antoine.dulong1@gmail.com)
+* Other author (sebastien.weber@cemes.fr)
 
 .. if needed use this field
 
     Contributors
     ============
 
-    * First Contributor
-    * Other Contributors
+    * First Contributor : Bélondrade Matthieu, Dulong Antoine
+    * Other Contributors : Weber Sébastien
 
 Instruments
 ===========

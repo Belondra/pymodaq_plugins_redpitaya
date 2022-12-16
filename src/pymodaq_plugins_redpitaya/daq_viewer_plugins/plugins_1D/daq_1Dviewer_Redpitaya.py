@@ -6,6 +6,7 @@ from pymodaq.utils.data import DataFromPlugins, Axis
 from pymodaq.control_modules.viewer_utility_classes import DAQ_Viewer_base, comon_parameters, main
 from pymodaq.utils.parameter import Parameter
 from pymodaq_plugins_redpitaya.hardware.redpitaya_scpi import scpi
+import time
 
 
 class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
@@ -22,7 +23,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         #  autocompletion
         self.controller: scpi = None
         # definie le controller en objet de class scpi
-
+        self.prepared = False
         # TODO declare here attributes you want/need to init with a default value
 
         self.x_axis = None
@@ -33,6 +34,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
     def is_ready(self):
         if self.controller.test_ready():
             self.timer.stop()
+            time.sleep(2)
             data = self.controller.get_data()
             self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(data)],
                                                           dim='Data1D', labels=['source1'],
@@ -85,8 +87,8 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         """Terminate the communication protocol"""
         self.controller.close()
 
-    def prepare_acquisition(self):
-        self.controller.prep_acq()
+    def prepare_acquisition(self, decimation):
+        self.controller.prep_acq(decimation)
 
 
     def grab_data(self, Naverage=1, **kwargs):
@@ -100,8 +102,9 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         kwargs: dict
             others optionals arguments
         """
-        ## TODO for your custom plugin
-        self.prepare_acquisition()
+        if not self.prepared:
+            self.prepare_acquisition(16)
+            self.prepared = True
         ##synchrone version (blocking function)
         data_tot = self.controller.start_analog_acq()
         self.timer.start()
@@ -118,6 +121,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
     def stop(self):
         """Stop the current grab hardware wise if necessary"""
         self.controller.stop_analog_acq()
+        self.prepared = False
         return ''
 
 

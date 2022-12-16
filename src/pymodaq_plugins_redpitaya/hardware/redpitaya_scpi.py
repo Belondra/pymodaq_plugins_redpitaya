@@ -143,16 +143,35 @@ class scpi (object):
 ###################### Fonctions perso #######################"
 
     def prep_acq(self, decimation: int = 1):
-         """Prepare the Red Pitaya board to the acquisition """
-         # s'assurer que l'argument est bien un entier entre 1 et 16 du log de 2 de l'argument
-         self.tx_txt('ACQ:RST')
-         self.tx_txt(f'ACQ:DEC {decimation}')
+        """Prepare the Red Pitaya board to the acquisition """
+        # s'assurer que l'argument est bien un entier entre 1 et 16 du log de 2 de l'argument
+        self.tx_txt('ACQ:RST')
+        self.tx_txt(f'ACQ:DEC {decimation}')
+        self.tx_txt(f'ACQ:TRI:LEV 0.5')
+
+        self.start_analog_gen()
+
 
     def start_analog_acq(self):
         """ Start the acquisition of the signal and return it into a list of float"""
+                              #Lance l'aquisition
+        self.tx_txt('ACQ:TRIG 1')                     #Active le trigger instantanément
+        self.tx_txt('ACQ:START')
 
-        self.tx_txt('ACQ:START')                        #Lance l'aquisition
-        self.tx_txt('ACQ:TRIG NOW')                     #Active le trigger instantanément
+    def start_analog_gen(self):
+        wave_form = 'sine'
+        freq = 500
+        ampl = 1
+
+        self.tx_txt('GEN:RST')
+
+        self.tx_txt('SOUR1:FUNC ' + str(wave_form).upper())
+        self.tx_txt('SOUR1:FREQ:FIX ' + str(freq))
+        self.tx_txt('SOUR1:VOLT ' + str(ampl))
+
+        # Enable output
+        self.tx_txt('SOUR1:TRIG:INT')
+        self.tx_txt('OUTPUT1:STATE ON')
 
     def test_ready(self):
         self.tx_txt('ACQ:TRIG:STAT?')            # Demande le statut du trigger --> TD ou WAIT
@@ -160,6 +179,7 @@ class scpi (object):
 
     def get_data(self, source: int = 1):
         #verifier si la source est bien 1 ou 2 sinon erreur
+        #le buffer du redpitaya est de 16384 valeurs
         self.tx_txt(f'ACQ:SOUR{source}:DATA?')  # Lit le buffer entier de l'entrée 1, en commencant par le plus vieux échantillons (celui juste après le trigger)
         buff_string = self.rx_txt()  # On crée une variable buff_string de type string
 

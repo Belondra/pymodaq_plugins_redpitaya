@@ -5,6 +5,7 @@ import socket
 __author__ = "Luka Golinar, Iztok Jeras"
 __copyright__ = "Copyright 2015, Red Pitaya"
 
+
 class scpi (object):
     """SCPI class used to access Red Pitaya over an IP network."""
     delimiter = '\r\n'

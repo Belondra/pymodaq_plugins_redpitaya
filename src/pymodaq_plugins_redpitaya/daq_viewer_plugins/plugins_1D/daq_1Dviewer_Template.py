@@ -107,6 +107,7 @@ class DAQ_1DViewer_Template(DAQ_Viewer_base):
 
         ##asynchrone version (non-blocking function with callback)
         self.controller.your_method_to_start_a_grab_snap(self.callback)
+
         #########################################################
 
 

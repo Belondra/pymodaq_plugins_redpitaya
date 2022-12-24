@@ -1,4 +1,4 @@
-pymodaq_plugins_template (??? Instruments)
+pymodaq_plugins_RedPitaya
 ##########################################
 
 .. the following must be adapted to your developped package, links to pypi, github  description...
@@ -15,8 +15,8 @@ pymodaq_plugins_template (??? Instruments)
    :target: https://github.com/PyMoDAQ/pymodaq_plugins_thorlabs
    :alt: Publication Status
 
-Set of PyMoDAQ plugins for instruments from ???
 
+The purpose of this PyMoDaq plugin is to interface between the voltage sensor on the test bench, and the user, via a display of the results and some adjustment commands. A part of the program will use the SCPI language to communicate with the CAN (redpitaya), we will find the definition of these SCPI functions in the Hardware part.
 
 Authors
 =======
@@ -37,33 +37,19 @@ Instruments
 
 Below is the list of instruments included in this plugin
 
-Actuators
-+++++++++
-
-* **yyy**: control of yyy actuators
-* **xxx**: control of xxx actuators
-
-Viewer0D
-++++++++
-
-* **yyy**: control of yyy 0D detector
-* **xxx**: control of xxx 0D detector
 
 Viewer1D
 ++++++++
 
-* **yyy**: control of yyy 1D detector
-* **xxx**: control of xxx 1D detector
+* **Y**: Signal aquisition from a tension sensor (1D detector)
+* **X**: Number of points of measure
 
-
-Viewer2D
-++++++++
-
-* **yyy**: control of yyy 2D detector
-* **xxx**: control of xxx 2D detector
 
 
 Infos
 =====
 
-if needed for installation or other infos
+To use this module you first need to install PyMoDaQ.
+
+This plugin as been created with the objective of being implemented in a plug and play spectrometer using a Raspberry Pi computer and a RedPitaya CAN.
+

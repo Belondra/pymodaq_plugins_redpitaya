@@ -4,8 +4,8 @@
 SHORT_PLUGIN_NAME = 'redpitaya'  #to be modified, for instance daqmx then rename the module name:
 # (pymodaq_plugins_redpitaya become pymodaq_plugins_daqmx for instance)
 
-package-url = 'https://github.com/Belondra/pymodaq_plugins_redpitaya' #to modify
-description = 'Ce plugin a pour but d assurer'
+package-url = 'https://github.com/Belondra/pymodaq_plugins_redpitaya'
+description = 'Plugin permettant l aquisition et l affichage des données d un spectromètre'
 
 author = 'Bélondrade Matthieu, Dulong Antoine'
 author-email = 'matthieu.belondrade@free.fr , antoine.dulong1@gmail.com'

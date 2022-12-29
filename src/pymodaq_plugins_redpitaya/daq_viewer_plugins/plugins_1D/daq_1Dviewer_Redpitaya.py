@@ -31,10 +31,11 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
         self.timer.setInterval(100)
         self.timer.timeout.connect(self.is_ready)
 
+
     def is_ready(self):
         if self.controller.test_ready():
             self.timer.stop()
-            time.sleep(2)
+            time.sleep(1)
             data = self.controller.get_data()
             self.data_grabed_signal.emit([DataFromPlugins(name='Mock1', data=[np.array(data)],
                                                           dim='Data1D', labels=['source1'],
@@ -103,8 +104,9 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
             others optionals arguments
         """
         if not self.prepared:
-            self.prepare_acquisition(16)
+            self.prepare_acquisition(64)
             self.prepared = True
+
         ##synchrone version (blocking function)
         data_tot = self.controller.start_analog_acq()
         self.timer.start()

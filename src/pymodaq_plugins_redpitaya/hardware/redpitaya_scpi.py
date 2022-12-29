@@ -156,7 +156,9 @@ class scpi (object):
         """ Start the acquisition of the signal and return it into a list of float"""
                               #Lance l'aquisition
         self.tx_txt('ACQ:TRIG 1')                     #Active le trigger instantanément
+        ##self.tx_txt('ACQ:TRIG:DLY 8192')
         self.tx_txt('ACQ:START')
+
 
     def start_analog_gen(self):
         wave_form = 'sine'

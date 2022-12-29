@@ -104,7 +104,7 @@ class DAQ_1DViewer_Redpitaya(DAQ_Viewer_base):
             others optionals arguments
         """
         if not self.prepared:
-            self.prepare_acquisition(64)
+            self.prepare_acquisition(32)
             self.prepared = True
 
         ##synchrone version (blocking function)
